@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">ぷるぷる</string>
+    <string name="app_name02">設定</string>
+
+    <string name="finish">終了</string>
+    <string name="settings">設定</string>
+
+	<string name="use_accelerometer">加速度センサー</string>
+    <string name="use_accelerometer_summary">加速度センサーを設定します（有効にする場合は再起動が必要です）</string>
+	<string name="use_accelerometer_summary_on">加速度センサーを使用します</string>
+	<string name="use_accelerometerm_summary_off">加速度センサーを使用しません</string>
+
+    <string name="use_eyeglass">メガネ</string>
+    <string name="use_eyeglass_summary">メガネの有無を設定します（有効にする場合は再起動が必要です）</string>
+    <string name="use_eyeglass_summary_on">メガネをかけます</string>
+    <string name="use_eyeglass_summary_off">メガネを外します</string>
+</resources>
