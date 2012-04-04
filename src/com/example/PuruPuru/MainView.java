@@ -173,7 +173,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
-        Log.d(TAG," onTouch");
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 break;
