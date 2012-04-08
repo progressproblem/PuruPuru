@@ -39,11 +39,11 @@ public class PuruPuru extends Activity
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         if (!useAccelerometer) {
             return;
         }
-        
+
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
 
         for (Sensor sensor : sensors) {

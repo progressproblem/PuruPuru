@@ -31,7 +31,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
     private static final int MEGANE_Y = 200;
 
     private SurfaceHolder holder;
-    private float[] accelerometerValues = new float[3];
 
     // 背景データ
     private Bitmap backgroundImage;
@@ -68,7 +67,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     public void init(Context context){
         setOnTouchListener(this);
-        holder = this.getHolder();
+        holder = getHolder();
         holder.addCallback(this);
 
         useAccelerometer = Setting.useAccelerometer(context);
@@ -209,6 +208,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
     public void onSensorChanged(SensorEvent event) {
         if (!useAccelerometer || event.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
 
+        float[] accelerometerValues = null;
         switch (event.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
                 accelerometerValues = event.values.clone();
