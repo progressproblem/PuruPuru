@@ -40,7 +40,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
     private int now_oppai_x;
     private int now_oppai_y;
 
-    private long animateTime = 3000l;
+    private long animateTime = 2000l;
     private long startTime = -1;
     private boolean nowAnimate = false;
 
@@ -73,12 +73,15 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         useAccelerometer = Setting.useAccelerometer(context);
         useEyeglass = Setting.useEyeglass(context);
 
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+
         Resources res = context.getResources();
-        backgroundImage = BitmapFactory.decodeResource(res, R.drawable.back);
+        backgroundImage = BitmapFactory.decodeResource(res, R.drawable.back, options);
 
-        oppaiImage = BitmapFactory.decodeResource(res, R.drawable.oppai);
+        oppaiImage = BitmapFactory.decodeResource(res, R.drawable.oppai, options);
 
-        meganeImage = BitmapFactory.decodeResource(res, R.drawable.megane);
+        meganeImage = BitmapFactory.decodeResource(res, R.drawable.megane, options);
     }
 
     @Override
