@@ -2,21 +2,16 @@ package com.example.PuruPuru;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.*;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
+import android.view.*;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,12 +20,19 @@ import java.util.concurrent.TimeUnit;
 public class MainView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener, SensorEventListener {
 
     private static final String TAG = MainView.class.getSimpleName();
+    private static final int SOURCE_WIDTH = 480;
+    private static final int SOURCE_HEIGHT = 800;
     private static final int OPPAI_START_X = 80;
     private static final int OPPAI_START_Y = 400;
     private static final int MEGANE_X = 100;
     private static final int MEGANE_Y = 200;
 
     private SurfaceHolder holder;
+    private int clientHeight;
+    private int clientWidth;
+    private float	resizeScale = 1.0f;
+    protected int offsetLeft = 0;
+    protected int offsetTop = 0;
 
     // 背景データ
     private Bitmap backgroundImage;
@@ -70,18 +72,61 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         holder = getHolder();
         holder.addCallback(this);
 
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display d =windowManager.getDefaultDisplay();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        d.getMetrics(displayMetrics);
+        clientHeight =  displayMetrics.heightPixels;
+        clientWidth = displayMetrics.widthPixels;
+
         useAccelerometer = Setting.useAccelerometer(context);
         useEyeglass = Setting.useEyeglass(context);
 
+        Resources res = context.getResources();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
-        Resources res = context.getResources();
+        if (SOURCE_WIDTH != clientWidth || SOURCE_HEIGHT != clientHeight){
+            if((long) SOURCE_WIDTH * clientHeight > (long)clientWidth * SOURCE_HEIGHT) {
+                resizeScale = (float)clientWidth / SOURCE_WIDTH;
+            } else {
+                resizeScale = (float)clientHeight / SOURCE_HEIGHT;
+            }
+
+            offsetLeft = ( clientWidth - (int)(SOURCE_WIDTH * resizeScale)) / 2;
+            offsetTop = (clientHeight - (int)(SOURCE_HEIGHT * resizeScale)) / 2;
+        }
+
         backgroundImage = BitmapFactory.decodeResource(res, R.drawable.back, options);
+        backgroundImage = resizeBitmap(backgroundImage);
 
         oppaiImage = BitmapFactory.decodeResource(res, R.drawable.oppai, options);
+        oppaiImage = resizeBitmap(oppaiImage);
 
         meganeImage = BitmapFactory.decodeResource(res, R.drawable.megane, options);
+        meganeImage = resizeBitmap(meganeImage);
+    }
+
+    private Bitmap resizeBitmap(Bitmap srcBitmap){
+        if (resizeScale == 1.0f){
+            return srcBitmap;
+        }
+
+        int	srcWidth = srcBitmap.getWidth();
+        int	srcHeight = srcBitmap.getHeight();
+        Matrix matrix = new Matrix();
+        matrix.postScale(resizeScale,resizeScale,0,0);
+        Bitmap resizedBitmap = Bitmap.createBitmap(srcBitmap,0,0, srcWidth, srcHeight ,matrix,true);
+        srcBitmap.recycle();
+        return resizedBitmap;
+    }
+
+    private float getResizedX(float x){
+       return x * resizeScale +  offsetLeft;
+    }
+
+    private float getResizedY(float y){
+        return y * resizeScale + offsetTop;
     }
 
     @Override
@@ -101,7 +146,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
     public void draw() {
         Canvas c = holder.lockCanvas();
 
-        c.drawBitmap(backgroundImage, 0, 0, null);
+        c.drawBitmap(backgroundImage, getResizedX(0), getResizedY(0), null);
 
         drawOppai(c);
 
@@ -149,12 +194,12 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         now_oppai_x = OPPAI_START_X - dx;
         now_oppai_y = OPPAI_START_Y - dy;
 
-        c.drawBitmap(oppaiImage, now_oppai_x,  now_oppai_y, null);
+        c.drawBitmap(oppaiImage, getResizedX(now_oppai_x),  getResizedY(now_oppai_y), null);
     }
 
     public void drawMegane(Canvas c){
         if (useEyeglass){
-            c.drawBitmap(meganeImage, MEGANE_X,  MEGANE_Y, null);
+            c.drawBitmap(meganeImage,  getResizedX(MEGANE_X),  getResizedY(MEGANE_Y), null);
         }
     }
 
@@ -195,13 +240,16 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         int imageWidth = oppaiImage.getWidth();
         int imageHeight = oppaiImage.getHeight();
 
-        if (x <  now_oppai_x || x > ( now_oppai_x + imageWidth - 1) ||
-                y < now_oppai_y || y > (now_oppai_y + imageHeight - 1)){
+        float resized_oppai_x = getResizedX(now_oppai_x);
+        float resized_oppai_y = getResizedY(now_oppai_y);
+
+        if (x <  resized_oppai_x || x > ( resized_oppai_x + imageWidth - 1) ||
+               y < resized_oppai_y || y > (resized_oppai_y + imageHeight - 1)){
             return false;
         }
 
-        int bmpX = x - now_oppai_x;
-        int bmpY = y - now_oppai_y;
+        int bmpX = (int)(x - resized_oppai_x);
+        int bmpY = (int)(y - resized_oppai_y);
         Integer color = oppaiImage.getPixel(bmpX, bmpY);
         int alpha = Color.alpha(color);
         return alpha >= 16;  // あまり薄い色もタッチ不可に
