@@ -10,7 +10,6 @@ import android.hardware.SensorManager;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.*;
 
 import java.util.concurrent.Executors;
