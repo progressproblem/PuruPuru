@@ -31,8 +31,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
     private int clientHeight;
     private int clientWidth;
     private float	resizeScale = 1.0f;
-    protected int offsetLeft = 0;
-    protected int offsetTop = 0;
+    private int offsetLeft = 0;
+    private int offsetTop = 0;
 
     // 背景データ
     private Bitmap backgroundImage;
@@ -82,7 +82,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         useAccelerometer = Setting.useAccelerometer(context);
         useEyeglass = Setting.useEyeglass(context);
 
-        Resources res = context.getResources();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
@@ -97,6 +96,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
             offsetTop = (clientHeight - (int)(SOURCE_HEIGHT * resizeScale)) / 2;
         }
 
+        Resources res = context.getResources();
         backgroundImage = BitmapFactory.decodeResource(res, R.drawable.back, options);
         backgroundImage = resizeBitmap(backgroundImage);
 
@@ -119,14 +119,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         Bitmap resizedBitmap = Bitmap.createBitmap(srcBitmap,0,0, srcWidth, srcHeight ,matrix,true);
         srcBitmap.recycle();
         return resizedBitmap;
-    }
-
-    private float getResizedX(float x){
-       return x * resizeScale +  offsetLeft;
-    }
-
-    private float getResizedY(float y){
-        return y * resizeScale + offsetTop;
     }
 
     @Override
@@ -153,6 +145,14 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         drawMegane(c);
 
         holder.unlockCanvasAndPost(c);
+    }
+
+    private float getResizedX(float x){
+        return x * resizeScale +  offsetLeft;
+    }
+
+    private float getResizedY(float y){
+        return y * resizeScale + offsetTop;
     }
 
     public void drawOppai(Canvas c){
@@ -244,7 +244,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         float resized_oppai_y = getResizedY(now_oppai_y);
 
         if (x <  resized_oppai_x || x > ( resized_oppai_x + imageWidth - 1) ||
-               y < resized_oppai_y || y > (resized_oppai_y + imageHeight - 1)){
+                y < resized_oppai_y || y > (resized_oppai_y + imageHeight - 1)){
             return false;
         }
 
