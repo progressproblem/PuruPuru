@@ -40,6 +40,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
     private Bitmap oppaiImage;
     private int now_oppai_x;
     private int now_oppai_y;
+    private int nowMode = 0;
 
     private long animateTime = 2000l;
     private long startTime = -1;
@@ -50,6 +51,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     private boolean useAccelerometer = false;
     private boolean useEyeglass = false;
+    private int oscillationMode = 0;
 
     public MainView(Context context) {
         super(context);
@@ -79,7 +81,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         clientWidth = displayMetrics.widthPixels;
 
         useAccelerometer = Setting.useAccelerometer(context);
-        useEyeglass = Setting.useEyeglass(context);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
@@ -114,7 +115,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
         int	srcWidth = srcBitmap.getWidth();
         int	srcHeight = srcBitmap.getHeight();
         Matrix matrix = new Matrix();
-        matrix.postScale(resizeScale,resizeScale,0,0);
+        matrix.postScale(resizeScale, resizeScale, 0, 0);
         Bitmap resizedBitmap = Bitmap.createBitmap(srcBitmap,0,0, srcWidth, srcHeight ,matrix,true);
         srcBitmap.recycle();
         return resizedBitmap;
@@ -165,18 +166,35 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
             if (passed <= animateTime){
                 double t = passed / 1000.0d; // 秒に変換
 
-                double r  = 20;
-                double mm = 0.5d;   // 質量
-                double kk = 100.0d; //バネ定数
-                double KK = 2.0d;   // 抵抗
+                double nY = 0;
+                double DD = 0;
+                switch (nowMode){
+                    case 2:
+                        double FF=920d;
+                        double Omega0=19d;
+                        double Omega= 0.84d *  Omega0;
 
-                double DD = KK * KK - 4.0d * mm * kk;
-                double DD2= Math.sqrt(-DD);
+                        DD=FF/((Omega0*Omega0-Omega*Omega));
 
-                double nY =
-                        r * Math.exp( -KK / 2.0d / mm * t )*(Math.cos( DD2 / 2.0d / mm * t)
-                                +KK / DD2 * Math.sin( DD2 / 2.0d / mm * t)
-                        );
+                        nY=(int)(DD*(Math.cos(Omega*t)-Math.cos(Omega0*t)));
+                        break;
+
+                    case 1:
+                    default:
+                        double r  = 20;
+                        double mm = 0.5d;   // 質量
+                        double kk = 100.0d; //バネ定数
+                        double KK = 2.0d;   // 抵抗
+
+                        DD = KK * KK - 4.0d * mm * kk;
+                        double DD2= Math.sqrt(-DD);
+
+                        nY =
+                                r * Math.exp( -KK / 2.0d / mm * t )*(Math.cos( DD2 / 2.0d / mm * t)
+                                        +KK / DD2 * Math.sin( DD2 / 2.0d / mm * t)
+                                );
+                        break;
+                }
 
                 double angle = 30.0d;      // 移動する向き 0=上、90=右…
                 double angleBlur = 20.0d;  // 角度のブレ
@@ -214,6 +232,10 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     private void startAnimation(){
         nowAnimate = true;
+        nowMode = oscillationMode;
+        if (nowMode == 0){
+            nowMode = (int)(Math.random() * 2.0d) + 1;
+        }
         startTime = SystemClock.uptimeMillis();
     }
 
@@ -278,5 +300,21 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+    }
+
+    public boolean isUseEyeglass() {
+        return useEyeglass;
+    }
+
+    public void setUseEyeglass(boolean useEyeglass) {
+        this.useEyeglass = useEyeglass;
+    }
+
+    public int getOscillationMode() {
+        return oscillationMode;
+    }
+
+    public void setOscillationMode(int oscillationMode) {
+        this.oscillationMode = oscillationMode;
     }
 }

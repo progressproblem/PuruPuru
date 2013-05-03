@@ -37,6 +37,14 @@ public class PuruPuru extends Activity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        mainView.setOscillationMode(Setting.oscillationMode(getApplicationContext()));
+        mainView.setUseEyeglass(Setting.useEyeglass(getApplicationContext()));
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 

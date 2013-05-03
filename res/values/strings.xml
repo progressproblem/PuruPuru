@@ -12,7 +12,21 @@
 	<string name="use_accelerometerm_summary_off">加速度センサーを使用しません</string>
 
     <string name="use_eyeglass">メガネ</string>
-    <string name="use_eyeglass_summary">メガネの有無を設定します（有効にする場合は再起動が必要です）</string>
+    <string name="use_eyeglass_summary">メガネの有無を設定します</string>
     <string name="use_eyeglass_summary_on">メガネをかけます</string>
     <string name="use_eyeglass_summary_off">メガネを外します</string>
+
+    <string name="oscillation_mode">揺らし方</string>
+    <string name="oscillation_mode_summary">おっぱいの揺らし方を設定します</string>
+    <string name="oscillation_mode_dialogtitle">揺らし方</string>
+    <string-array name="oscillation_mode_entries">
+        <item>ランダム</item>
+        <item>ぷるん（減衰振動）</item>
+        <item>ばいん（強制振動）</item>
+    </string-array>
+    <string-array name="oscillation_mode_entryvalues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>

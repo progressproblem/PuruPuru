@@ -1,11 +1,10 @@
 package com.example.PuruPuru;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
+import android.preference.*;
 
 public class Setting extends PreferenceActivity {
 
@@ -41,6 +40,17 @@ public class Setting extends PreferenceActivity {
                 return true;
             }
         });
+
+        ListPreference oscillationMode = (ListPreference)findPreference("oscillationMode");
+        oscillationMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Resources res = getResources();
+                int no = Integer.parseInt((String)newValue);
+                TypedArray ob = res.obtainTypedArray(R.array.oscillation_mode_entries);
+                preference.setSummary(ob.getText(no));
+                return true;
+            }
+        });
     }
 
     public static boolean useAccelerometer(Context con){
@@ -49,6 +59,11 @@ public class Setting extends PreferenceActivity {
 
     public static boolean useEyeglass(Context con){
         return PreferenceManager.getDefaultSharedPreferences(con).getBoolean("useEyeglass", false);
+    }
+
+    public static int oscillationMode(Context con){
+        String str = PreferenceManager.getDefaultSharedPreferences(con).getString("oscillationMode", "1");
+        return Integer.parseInt(str);
     }
 
 }

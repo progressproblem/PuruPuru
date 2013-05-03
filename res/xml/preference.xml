@@ -15,5 +15,13 @@
             android:defaultValue="false"
             >
     </CheckBoxPreference>
+    <ListPreference
+            android:key="oscillationMode"
+            android:title="@string/oscillation_mode"
+            android:summary="@string/oscillation_mode_summary"
+            android:dialogTitle="@string/oscillation_mode_dialogtitle"
+            android:entries="@array/oscillation_mode_entries"
+            android:entryValues="@array/oscillation_mode_entryvalues"
+            android:defaultValue="1" />
 </PreferenceCategory>
 </PreferenceScreen>
